@@ -1,0 +1,43 @@
+{
+  "app": {
+    "title": "staffhub",
+    "textColor": {
+      "light": "black",
+      "dark": "white"
+    },
+    "statusBar": "transparent",
+    "actionBarHidden": true,
+    "hideIOSSafeAreaBottom": true,
+    "hideAndroidBottomNavigationBar": false
+  },
+  "listPages": [
+    {
+      "name": "home",
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "Home"
+      }
+    },
+    {
+      "name": "profile",
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "Profile"
+      }
+    }
+  ],
+  "listCSS": [],
+  "listSyncJS": [],
+  "listAsyncJS": [],
+  "permissions": {
+    "userLocation": {
+      "desc": "Your location will be used to verify your check-in."
+    },
+    "camera": {
+      "desc": "Camera access is needed to take photos for your profile."
+    },
+    "getPhoneNumber": {
+      "desc": "Phone number is required for account verification."
+    }
+  }
+}
