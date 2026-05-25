@@ -13,7 +13,6 @@ function ProfilePage() {
         backgroundImage: `url(${bg})`,
       }}
     >
-      <Box></Box>
       <Box textAlign="center" className="space-y-1">
         <Text.Title size="xLarge">Hello world!</Text.Title>
         <Text>Welcome to the profile page!</Text>

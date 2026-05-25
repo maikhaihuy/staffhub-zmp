@@ -12,3 +12,12 @@
 .zaui-list-item {
   cursor: pointer;
 }
+
+.zaui-tabs-tabbar {
+  justify-content: space-around;
+}
+
+.zaui-tabs-tabbar-item {
+  flex: 1;
+  text-align: center;
+}

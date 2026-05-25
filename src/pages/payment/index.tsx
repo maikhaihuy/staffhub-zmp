@@ -5,7 +5,7 @@ import Clock from "@/components/clock";
 import Logo from "@/components/logo";
 import bg from "@/static/bg.svg";
 
-function DashboardPage() {
+function PaymentPage() {
   return (
     <Page
       className="flex flex-col items-center justify-center space-y-6 bg-cover bg-center bg-no-repeat bg-white dark:bg-black"
@@ -22,4 +22,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default PaymentPage;
