@@ -22,6 +22,37 @@ export interface Shift {
   totalTasks: number
   mandatoryCount: number
   label?: string
+  masterShift?: ShiftLevelInfo
+  subShift?: ShiftLevelInfo
+}
+
+export interface ShiftLevelInfo {
+  label: string
+  startTime: string
+  endTime: string
+  team?: string
+}
+
+export type ShiftTaskScope = 'master' | 'sub'
+
+export type ShiftTaskKind = 'mandatory' | 'optional'
+
+export interface ShiftTask {
+  id: string
+  title: string
+  helperText: string
+  scope: ShiftTaskScope
+  kind: ShiftTaskKind
+  done: boolean
+  completedByName?: string
+  completedAt?: string
+}
+
+export interface ShiftTaskGroup {
+  scope: ShiftTaskScope
+  title: string
+  subtitle: string
+  tasks: ShiftTask[]
 }
 
 export interface TodoTask {

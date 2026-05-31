@@ -1,17 +1,12 @@
 import React from 'react'
-import type { MandatoryTaskState, TodoTask, EvidencePhoto } from '@/types/shift'
-import { MandatoryTasks } from './MandatoryTasks'
+import type { EvidencePhoto, ShiftTaskGroup } from '@/types/shift'
+import { ScopedShiftTasks } from './ScopedShiftTasks'
 import { EvidenceUpload } from './EvidenceUpload'
-import { TodoList } from './TodoList'
 
 interface InShiftBodyProps {
-  mandatoryState: MandatoryTaskState
-  todos: TodoTask[]
+  taskGroups: ShiftTaskGroup[]
   photos: EvidencePhoto[]
-  todoDoneCount: number
-  onOpenInventory: () => void
-  onOpenRevenue: () => void
-  onToggleTodo: (id: number) => void
+  onToggleTask: (id: string) => void
   onAddPhoto: (url: string) => void
   onRemovePhoto: (id: string) => void
   onOpenCamera: () => void
@@ -19,13 +14,9 @@ interface InShiftBodyProps {
 }
 
 export function InShiftBody({
-  mandatoryState,
-  todos,
+  taskGroups,
   photos,
-  todoDoneCount,
-  onOpenInventory,
-  onOpenRevenue,
-  onToggleTodo,
+  onToggleTask,
   onAddPhoto,
   onRemovePhoto,
   onOpenCamera,
@@ -33,22 +24,13 @@ export function InShiftBody({
 }: InShiftBodyProps) {
   return (
     <div className="body-content body-content--inshift">
-      <MandatoryTasks
-        state={mandatoryState}
-        onOpenInventory={onOpenInventory}
-        onOpenRevenue={onOpenRevenue}
-      />
+      <ScopedShiftTasks groups={taskGroups} onToggleTask={onToggleTask} />
       <EvidenceUpload
         photos={photos}
         onAdd={onAddPhoto}
         onRemove={onRemovePhoto}
         onOpenCamera={onOpenCamera}
         canAdd={canAddPhoto}
-      />
-      <TodoList
-        todos={todos}
-        onToggle={onToggleTodo}
-        doneCount={todoDoneCount}
       />
     </div>
   )

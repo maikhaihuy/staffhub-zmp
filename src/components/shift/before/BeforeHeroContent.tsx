@@ -13,13 +13,13 @@ export function BeforeHeroContent({ shift }: BeforeHeroContentProps) {
 
   return (
     <div className="hero-content hero-content--before">
-      <p className="hero-eyebrow">Shift starts in</p>
+      <p className="hero-eyebrow">Ca bắt đầu sau</p>
       <div className="countdown-row" aria-label={`${countdown.hours} hours, ${countdown.minutes} minutes, ${countdown.seconds} seconds`}>
-        <CountUnit value={countdown.hours} label="hrs" />
+        <CountUnit value={countdown.hours} label="giờ" />
         <span className="countdown-sep" aria-hidden="true">:</span>
-        <CountUnit value={countdown.minutes} label="min" />
+        <CountUnit value={countdown.minutes} label="phút" />
         <span className="countdown-sep" aria-hidden="true">:</span>
-        <CountUnit value={countdown.seconds} label="sec" />
+        <CountUnit value={countdown.seconds} label="giây" />
       </div>
       <div className="before-shift-meta">
         <span className="shift-meta-tag">
@@ -32,7 +32,7 @@ export function BeforeHeroContent({ shift }: BeforeHeroContentProps) {
         </span>
         {!enabled && (
           <p className="checkin-window-hint">
-            Check-in opens {CHECKIN_WINDOW_MINUTES} min before shift
+            Mở vào ca trước {CHECKIN_WINDOW_MINUTES} phút
           </p>
         )}
       </div>

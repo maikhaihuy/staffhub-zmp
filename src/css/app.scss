@@ -2,6 +2,38 @@
 //   padding: 16px 16px 96px 16px;
 // }
 
+:root {
+  --app-bottom-nav-height: calc(var(--zaui-safe-area-inset-bottom, 0px) + 48px);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-routes {
+  flex: 0 0 calc(100dvh - var(--app-bottom-nav-height));
+  height: calc(100dvh - var(--app-bottom-nav-height));
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-bottom-nav {
+  flex: 0 0 var(--app-bottom-nav-height);
+  height: var(--app-bottom-nav-height);
+  min-height: var(--app-bottom-nav-height);
+  position: relative;
+  z-index: 100;
+}
+
+.app-bottom-nav .zaui-bottom-navigation,
+.app-bottom-nav .zaui-bottom-navigation-content {
+  height: 100%;
+}
+
 .zaui-page {
   min-height: 0;
 }

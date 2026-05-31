@@ -6,6 +6,7 @@ interface InShiftHeroContentProps {
   tasksDone: number
   tasksTotal: number
   mandatoryDone: number
+  mandatoryTotal: number
 }
 
 export function InShiftHeroContent({
@@ -13,19 +14,32 @@ export function InShiftHeroContent({
   tasksDone,
   tasksTotal,
   mandatoryDone,
+  mandatoryTotal,
 }: InShiftHeroContentProps) {
   const progress = getShiftProgress(shift)
+  const masterShift = shift.masterShift ?? shift
+  const subShift = shift.subShift ?? shift
 
   return (
     <div className="hero-content hero-content--inshift">
+      <div className="shift-level-rows" aria-label="Thông tin ca">
+        <div className="shift-level-row">
+          <span>Ca chính</span>
+          <strong>{masterShift.startTime} - {masterShift.endTime}</strong>
+        </div>
+        <div className="shift-level-row">
+          <span>Ca của bạn</span>
+          <strong>{subShift.startTime} - {subShift.endTime}{subShift.team ? ` · ${subShift.team}` : ''}</strong>
+        </div>
+      </div>
       <div className="inshift-stats-row">
-        <StatChip label="Tasks" value={`${tasksDone}/${tasksTotal}`} color="default" />
+        <StatChip label="Việc" value={`${tasksDone}/${tasksTotal}`} color="default" />
         <StatChip
-          label="Required"
-          value={`${mandatoryDone}/2`}
-          color={mandatoryDone === 2 ? 'green' : 'amber'}
+          label="Bắt buộc"
+          value={`${mandatoryDone}/${mandatoryTotal}`}
+          color={mandatoryDone === mandatoryTotal ? 'green' : 'amber'}
         />
-        <StatChip label="Elapsed" value={progress.elapsedLabel.replace(' elapsed', '')} color="default" />
+        <StatChip label="Đã làm" value={progress.elapsedLabel.replace(' elapsed', '')} color="default" />
       </div>
       <div className="shift-progress-bar" role="progressbar" aria-valuenow={progress.percentage} aria-valuemin={0} aria-valuemax={100} aria-label={`Shift ${progress.percentage}% complete`}>
         <div className="shift-progress-fill" style={{ width: `${progress.percentage}%` }} />

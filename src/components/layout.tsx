@@ -36,8 +36,8 @@ const AnimateRoutes = () => {
   };
 
   return (
-    <Box flex flexDirection="column" className="h-screen overflow-hidden">
-      <Box className="flex-1 min-h-0 overflow-hidden">
+    <Box flex flexDirection="column" className="app-shell">
+      <Box className="app-routes">
         <AnimationRoutes>
           <Route path={PATHS.CALENDAR} element={<SchedulePage />}></Route>
           <Route path={PATHS.TASK} element={<TaskPage />}></Route>
@@ -46,7 +46,7 @@ const AnimateRoutes = () => {
           <Route path={PATHS.PROFILE} element={<ProfilePage />}></Route>
         </AnimationRoutes>
       </Box>
-      <Box className="shrink-0">
+      <Box className="app-bottom-nav">
         <BottomNavigationBar activeKey={location.pathname} onTabChange={handleTabChange} />
       </Box>
     </Box>

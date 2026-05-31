@@ -12,7 +12,7 @@ export function StatusPill({ pageState, shiftLabel, checkedInAt, checkedOutAt }:
     return (
       <span className="pill pill--before">
         <span className="pill__dot pill__dot--amber" aria-hidden="true" />
-        {shiftLabel ?? 'Upcoming shift'}
+        {shiftLabel ?? 'Ca sắp tới'}
       </span>
     )
   }
@@ -21,7 +21,7 @@ export function StatusPill({ pageState, shiftLabel, checkedInAt, checkedOutAt }:
     return (
       <span className="pill pill--active">
         <span className="pill__dot pill__dot--green" aria-hidden="true" />
-        {checkedInAt ? `In since ${checkedInAt}` : 'Shift active'}
+        {checkedInAt ? `Đã vào ca từ ${checkedInAt}` : 'Đang trong ca'}
       </span>
     )
   }
@@ -30,7 +30,7 @@ export function StatusPill({ pageState, shiftLabel, checkedInAt, checkedOutAt }:
   return (
     <span className="pill pill--off">
       <span className="pill__dot pill__dot--gray" aria-hidden="true" />
-      {checkedOutAt ? `Done · out ${checkedOutAt}` : 'Off duty'}
+      {checkedOutAt ? `Xong ca · ra lúc ${checkedOutAt}` : 'Ngoài ca'}
     </span>
   )
 }

@@ -85,29 +85,6 @@ input, textarea { font-family: var(--font); }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
-/* ══ DEMO TABS (remove in production) ══════════════════════════ */
-.demo-tabs {
-  display: flex;
-  background: #141210;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.demo-tab {
-  flex: 1;
-  padding: 11px 6px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--hint);
-  border-bottom: 2.5px solid transparent;
-  transition: color .15s, border-color .15s;
-  white-space: nowrap;
-  letter-spacing: .01em;
-}
-.demo-tab.active { color: var(--tea-mid); border-bottom-color: var(--tea-mid); }
-
 /* ══ SHELL — THE FIXED SKELETON ════════════════════════════════
    This is the layout contract. Positions NEVER shift between
    page states. Only the *content* inside each zone changes.
@@ -115,7 +92,7 @@ input::-webkit-inner-spin-button { -webkit-appearance: none; }
 .shell {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 40px); /* subtract demo-tabs */
+  height: 100%;
   min-height: 0;
   background: var(--dark);
   overflow: hidden;
