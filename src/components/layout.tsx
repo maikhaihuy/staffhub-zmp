@@ -2,6 +2,7 @@ import { getSystemInfo } from "zmp-sdk";
 import {
   AnimationRoutes,
   App,
+  Box,
   Route,
   SnackbarProvider,
   useLocation,
@@ -9,12 +10,13 @@ import {
   ZMPRouter,
 } from "zmp-ui";
 import { AppProps } from "zmp-ui/app";
-import ProfilePage from "@/pages/profile";
-import PaymentPage from "@/pages/payment";
+import ProfilePage from "@/pages/staff/profile";
+import PaymentPage from "@/pages/staff/income";
 import { BottomNavigationBar } from "./bottom-navigation";
-import SchedulePage from "@/pages/schedule";
-import TaskPage from "@/pages/task";
+import SchedulePage from "@/pages/staff/schedule";
+import TaskPage from "@/pages/staff/task";
 import { PATHS, TAB_PATHS } from "@/constants/paths";
+import { incomeRouteElements } from "./routes";
 
 const AnimateRoutes = () => {
   const navigate = useNavigate();
@@ -34,15 +36,20 @@ const AnimateRoutes = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <AnimationRoutes>
-        <Route path={PATHS.CALENDAR} element={<SchedulePage />}></Route>
-        <Route path={PATHS.TASK} element={<TaskPage />}></Route>
-        <Route path={PATHS.PAYMENT} element={<PaymentPage />}></Route>
-        <Route path={PATHS.PROFILE} element={<ProfilePage />}></Route>
-      </AnimationRoutes>
-      <BottomNavigationBar activeKey={location.pathname} onTabChange={handleTabChange} />
-    </div>
+    <Box flex flexDirection="column" className="h-screen overflow-hidden">
+      <Box className="flex-1 min-h-0 overflow-hidden">
+        <AnimationRoutes>
+          <Route path={PATHS.CALENDAR} element={<SchedulePage />}></Route>
+          <Route path={PATHS.TASK} element={<TaskPage />}></Route>
+          <Route path={PATHS.PAYMENT} element={<PaymentPage />}></Route>
+          {incomeRouteElements}
+          <Route path={PATHS.PROFILE} element={<ProfilePage />}></Route>
+        </AnimationRoutes>
+      </Box>
+      <Box className="shrink-0">
+        <BottomNavigationBar activeKey={location.pathname} onTabChange={handleTabChange} />
+      </Box>
+    </Box>
   )
 }
 

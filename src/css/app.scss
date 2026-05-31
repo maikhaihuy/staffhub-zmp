@@ -1,5 +1,32 @@
-.page {
-  padding: 16px 16px 96px 16px;
+// .page {
+//   padding: 16px 16px 96px 16px;
+// }
+
+.zaui-page {
+  min-height: 0;
+}
+
+.zaui-routes {
+  height: 100%;
+  min-height: 0;
+}
+
+.zaui-routes .zaui-routes-item {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+}
+
+.schedule-tabs {
+  --weekly-schedule-sticky-top: 44px;
+  overflow: visible;
+}
+
+.schedule-tabs > .zaui-tabs-tabbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .section-container {

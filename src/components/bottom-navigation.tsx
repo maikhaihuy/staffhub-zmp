@@ -27,7 +27,8 @@ export const BottomNavigationBar = ({ activeKey, onTabChange }: { activeKey: str
       id="footer"
       activeKey={activeKey}
       onChange={onTabChange}
-      className="z-50">
+      className="z-50"
+      >
       {Object.entries(BottomNavigationItems).map(([path, item]) => (
         <BottomNavigation.Item
           key={path}
