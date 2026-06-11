@@ -21,18 +21,26 @@ export function InShiftHeroContent({
   const subShift = shift.subShift ?? shift
 
   return (
-    <div className="hero-content hero-content--inshift">
-      <div className="shift-level-rows" aria-label="Thông tin ca">
-        <div className="shift-level-row">
-          <span>Ca chính</span>
-          <strong>{masterShift.startTime} - {masterShift.endTime}</strong>
+    <div className="w-full">
+      <div className="mb-3 grid gap-1.5" aria-label="Thông tin ca">
+        <div className="flex items-center justify-between gap-2.5 rounded-lg border border-white/[.08] bg-white/[.06] px-2.5 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-[.06em] text-stone-500">
+            Ca chính
+          </span>
+          <strong className="min-w-0 text-right text-[13px] font-semibold text-white">
+            {masterShift.startTime} - {masterShift.endTime}
+          </strong>
         </div>
-        <div className="shift-level-row">
-          <span>Ca của bạn</span>
-          <strong>{subShift.startTime} - {subShift.endTime}{subShift.team ? ` · ${subShift.team}` : ''}</strong>
+        <div className="flex items-center justify-between gap-2.5 rounded-lg border border-white/[.08] bg-white/[.06] px-2.5 py-2">
+          <span className="text-[10px] font-semibold uppercase tracking-[.06em] text-stone-500">
+            Ca của bạn
+          </span>
+          <strong className="min-w-0 text-right text-[13px] font-semibold text-white">
+            {subShift.startTime} - {subShift.endTime}{subShift.team ? ` · ${subShift.team}` : ''}
+          </strong>
         </div>
       </div>
-      <div className="inshift-stats-row">
+      <div className="mb-3 flex gap-2">
         <StatChip label="Việc" value={`${tasksDone}/${tasksTotal}`} color="default" />
         <StatChip
           label="Bắt buộc"
@@ -41,12 +49,22 @@ export function InShiftHeroContent({
         />
         <StatChip label="Đã làm" value={progress.elapsedLabel.replace(' elapsed', '')} color="default" />
       </div>
-      <div className="shift-progress-bar" role="progressbar" aria-valuenow={progress.percentage} aria-valuemin={0} aria-valuemax={100} aria-label={`Shift ${progress.percentage}% complete`}>
-        <div className="shift-progress-fill" style={{ width: `${progress.percentage}%` }} />
+      <div
+        className="mb-1.5 h-1 overflow-hidden rounded-sm bg-white/10"
+        role="progressbar"
+        aria-valuenow={progress.percentage}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Shift ${progress.percentage}% complete`}
+      >
+        <div
+          className="h-full rounded-sm bg-amber-600 transition-[width] duration-[600ms] ease-out"
+          style={{ width: `${progress.percentage}%` }}
+        />
       </div>
-      <div className="shift-progress-labels">
+      <div className="flex justify-between font-mono text-[11px] text-stone-500">
         <span>{shift.startTime}</span>
-        <span className="shift-progress-pct">{progress.percentage}%</span>
+        <span className="font-medium text-amber-600">{progress.percentage}%</span>
         <span>{shift.endTime}</span>
       </div>
     </div>
@@ -55,9 +73,19 @@ export function InShiftHeroContent({
 
 function StatChip({ label, value, color }: { label: string; value: string; color: 'default' | 'green' | 'amber' }) {
   return (
-    <div className={`stat-chip stat-chip--${color}`}>
-      <span className="stat-chip__value">{value}</span>
-      <span className="stat-chip__label">{label}</span>
+    <div className="flex flex-1 flex-col gap-[3px] rounded-lg border border-white/[.08] bg-white/[.07] px-2.5 pb-2 pt-[9px]">
+      <span className={`font-mono text-lg font-medium leading-none ${STAT_VALUE_CLASSES[color]}`}>
+        {value}
+      </span>
+      <span className="text-[10px] uppercase tracking-[.06em] text-stone-500">
+        {label}
+      </span>
     </div>
   )
+}
+
+const STAT_VALUE_CLASSES: Record<'default' | 'green' | 'amber', string> = {
+  default: 'text-white',
+  green: 'text-green-400',
+  amber: 'text-amber-400',
 }

@@ -25,27 +25,37 @@ export function ShiftTaskSection({
 }: ShiftTaskSectionProps) {
   return (
     <section aria-label={label}>
-      <div className="section-label">
+      <div className="mb-[7px] flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[.08em] text-stone-500">
         {icon === "warning" ? <WarningIcon /> : <ChecklistIcon />}
         {label}
       </div>
 
-      <div className="scoped-task-stack">
+      <div className="grid gap-2.5">
         {groups.map((group) => {
           const tasks = group.tasks.filter((task) => task.kind === kind);
           if (tasks.length === 0) return null;
 
           return (
             <div
-              className={`task-group ${mandatory ? "task-group--mandatory" : ""}`}
+              className={`overflow-hidden rounded-xl border bg-white ${
+                mandatory ? "border-amber-200" : "border-stone-200"
+              }`}
               key={`${group.scope}-${kind}`}
             >
-              <div className="task-scope-header">
+              <div className="flex items-center justify-between gap-2.5 border-b border-amber-200 bg-amber-100 px-3.5 py-[9px]">
                 <div>
-                  <div className="task-scope-title">{group.title}</div>
-                  <div className="task-scope-subtitle">{group.subtitle}</div>
+                  <div className="text-xs font-bold text-amber-900">{group.title}</div>
+                  <div className="mt-0.5 text-[11px] text-stone-500">
+                    {group.subtitle}
+                  </div>
                 </div>
-                <span className={`scope-badge scope-badge--${group.scope}`}>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-[3px] text-[10.5px] font-bold ${
+                    group.scope === "master"
+                      ? "bg-amber-50 text-amber-600"
+                      : "bg-blue-50 text-blue-700"
+                  }`}
+                >
                   {getScopeLabel(group.scope)}
                 </span>
               </div>

@@ -32,38 +32,53 @@ export function EvidenceUpload({ photos, onAdd, onRemove, onOpenCamera, canAdd }
 
   return (
     <section aria-label="Ảnh ca của tôi">
-      <div className="section-label">
+      <div className="mb-[7px] flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[.08em] text-stone-500">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span className="section-label-stack">
+        <span className="flex flex-1 flex-col gap-px leading-[1.15]">
           <span>Ảnh ca của tôi</span>
-          <span>Tải ảnh cho ca làm của riêng bạn</span>
+          <span className="text-[10px] font-medium normal-case tracking-normal text-stone-400">
+            Tải ảnh cho ca làm của riêng bạn
+          </span>
         </span>
-        {photos.length > 0 && <span className="counter-badge">{photos.length}/6</span>}
+        {photos.length > 0 && (
+          <span className="rounded-[10px] bg-stone-200 px-2 py-0.5 text-[11px] font-semibold text-stone-500">
+            {photos.length}/6
+          </span>
+        )}
       </div>
 
-      <div className="task-group">
-        <div className="upload-zone">
+      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div className="p-3.5">
           {photos.length === 0 && (
-            <div className="upload-empty">
+            <div className="mb-2.5 flex flex-col items-center gap-1.5 rounded-[10px] border-[1.5px] border-dashed border-stone-300 p-5 text-center text-stone-400">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span className="upload-empty__title">Chưa có ảnh</span>
-              <span className="upload-empty__sub">Quầy sạch · khu làm việc · ghi chú ca</span>
+              <span className="text-[13px] font-medium text-stone-500">Chưa có ảnh</span>
+              <span className="text-[11px] text-stone-400">Quầy sạch · khu làm việc · ghi chú ca</span>
             </div>
           )}
 
           {photos.length > 0 && (
-            <div className="thumbs-grid" role="list" aria-label="Uploaded evidence photos">
+            <div className="mb-2.5 flex flex-wrap gap-2" role="list" aria-label="Uploaded evidence photos">
               {photos.map((photo, i) => (
-                <div key={photo.id} className="thumb" role="listitem" style={{ background: PLACEHOLDER_COLORS[i % PLACEHOLDER_COLORS.length] }}>
+                <div
+                  key={photo.id}
+                  className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[9px]"
+                  role="listitem"
+                  style={{ background: PLACEHOLDER_COLORS[i % PLACEHOLDER_COLORS.length] }}
+                >
                   {photo.url.startsWith('blob:') || photo.url.startsWith('http') ? (
-                    <img src={photo.url} alt={`Evidence photo ${i + 1}`} className="thumb__img" />
+                    <img
+                      src={photo.url}
+                      alt={`Evidence photo ${i + 1}`}
+                      className="block h-full w-full object-cover"
+                    />
                   ) : (
-                    <div className="thumb__placeholder" aria-hidden="true">
+                    <div className="flex h-full w-full items-center justify-center" aria-hidden="true">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                     </div>
                   )}
                   <button
-                    className="thumb__remove"
+                    className="absolute right-1 top-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-black/55 text-white transition-transform active:scale-90"
                     onClick={() => onRemove(photo.id)}
                     aria-label={`Remove photo ${i + 1}`}
                   >
@@ -74,7 +89,7 @@ export function EvidenceUpload({ photos, onAdd, onRemove, onOpenCamera, canAdd }
             </div>
           )}
 
-          <div className="upload-actions">
+          <div className="flex gap-2">
             <input
               ref={fileRef}
               type="file"
@@ -85,7 +100,7 @@ export function EvidenceUpload({ photos, onAdd, onRemove, onOpenCamera, canAdd }
               aria-hidden="true"
             />
             <button
-              className="upload-btn"
+              className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-stone-200 text-[13px] font-medium text-stone-900 transition-colors active:enabled:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-[.45]"
               onClick={handleGalleryClick}
               disabled={!canAdd}
               aria-label="Chọn ảnh từ thư viện"
@@ -94,7 +109,7 @@ export function EvidenceUpload({ photos, onAdd, onRemove, onOpenCamera, canAdd }
               Thư viện
             </button>
             <button
-              className="upload-btn upload-btn--primary"
+              className="flex h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border border-amber-700 bg-amber-700 text-[13px] font-medium text-white shadow-[0_2px_10px_rgba(180,83,9,.25)] transition-colors active:enabled:bg-amber-800 disabled:cursor-not-allowed disabled:opacity-[.45]"
               onClick={onOpenCamera}
               disabled={!canAdd}
               aria-label="Chụp ảnh bằng camera"

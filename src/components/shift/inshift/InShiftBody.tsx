@@ -1,4 +1,3 @@
-import React from 'react'
 import type { EvidencePhoto, ShiftTaskGroup } from '@/types/shift'
 import { ScopedShiftTasks } from './ScopedShiftTasks'
 import { EvidenceUpload } from './EvidenceUpload'
@@ -23,7 +22,7 @@ export function InShiftBody({
   canAddPhoto,
 }: InShiftBodyProps) {
   return (
-    <div className="body-content body-content--inshift">
+    <div className="flex flex-col gap-3.5 px-4 pb-[104px] pt-4">
       <ScopedShiftTasks groups={taskGroups} onToggleTask={onToggleTask} />
       <EvidenceUpload
         photos={photos}
