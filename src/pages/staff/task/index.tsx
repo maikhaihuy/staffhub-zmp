@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Page } from "zmp-ui";
 
 import { BeforeBody } from "@/components/shift/before/BeforeBody";
@@ -14,25 +14,90 @@ import { ShiftPageShell } from "@/components/shift/shared/ShiftPageShell";
 import { StatusPill } from "@/components/shift/shared/StatusPill";
 import { useCheckStatus } from "@/hooks/useCheckStatus";
 import { useEvidencePhotos } from "@/hooks/useEvidencePhotos";
-import { useShiftState } from "@/hooks/useShiftState";
 import { useShiftTasks } from "@/hooks/useShiftTasks";
-import type { ShiftTask } from "@/types/shift";
-import { isCheckInEnabled } from "@/utils/shiftUtils";
+import type {
+  Shift,
+  ShiftCheckStatus,
+  ShiftPageState,
+  ShiftTask,
+  ShiftTimeStatus,
+} from "@/types/shift";
+import {
+  deriveShiftState,
+  deriveShiftTimeStatus,
+  getCheckinOpenTime,
+  getEmployeeShiftWindow,
+  isCheckInEnabled,
+  isCheckOutAllowed,
+  validateShiftContext,
+} from "@/utils/shiftUtils";
 
 import { CURRENT_SHIFT, NEXT_SHIFT, TASK_EMPLOYEE } from "./mock-data";
 
 type TaskModal = "missing-required" | "optional-warning" | null;
 
+type TaskPageViewModel =
+  | {
+      state: "NO_SHIFT_TODAY";
+      currentShift: null;
+      nextShift: Shift | null;
+    }
+  | {
+      state: "UPCOMING_SHIFT";
+      currentShift: Shift;
+      nextShift: Shift | null;
+    }
+  | {
+      state: "ACTIVE_SHIFT";
+      currentShift: Shift;
+      nextShift: Shift | null;
+    }
+  | {
+      state: "COMPLETED_SHIFT";
+      currentShift: Shift;
+      nextShift: Shift | null;
+    };
+
 function TaskPage() {
-  const { pageState } = useShiftState(CURRENT_SHIFT, NEXT_SHIFT);
   const { checkStatus, checkIn, checkOut } = useCheckStatus();
   const shiftTasks = useShiftTasks(TASK_EMPLOYEE.name);
   const evidence = useEvidencePhotos();
   const [modalOpen, setModalOpen] = useState<TaskModal>(null);
+  const [serverNowIso, setServerNowIso] = useState(() =>
+    new Date().toISOString(),
+  );
 
-  const checkinEnabled = isCheckInEnabled(CURRENT_SHIFT);
-  const totalDone = shiftTasks.doneCount;
-  const totalTasks = shiftTasks.totalCount;
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setServerNowIso(new Date().toISOString());
+    }, 60_000);
+
+    return () => window.clearInterval(id);
+  }, []);
+
+  const shiftContext = useMemo(
+    () =>
+      validateShiftContext({
+        currentShift: CURRENT_SHIFT,
+        nextShift: NEXT_SHIFT,
+        serverNow: serverNowIso,
+      }),
+    [serverNowIso],
+  );
+  const { currentShift, nextShift, serverNow } = shiftContext;
+  const pageState = deriveShiftState(currentShift, checkStatus);
+  const view = createTaskPageViewModel({
+    pageState,
+    currentShift,
+    nextShift,
+  });
+  const timeStatus = deriveShiftTimeStatus(currentShift, checkStatus, serverNow);
+  const checkinEnabled = currentShift
+    ? isCheckInEnabled(currentShift, serverNow)
+    : false;
+  const checkoutAllowed = currentShift
+    ? isCheckOutAllowed(currentShift, checkStatus, serverNow)
+    : false;
 
   const missingRequiredGroups = useMemo(
     () => groupTasksForModal(shiftTasks.missingMandatory),
@@ -68,70 +133,27 @@ function TaskPage() {
     doCheckOut();
   }
 
-  const statusPill = (
-    <StatusPill
-      pageState={pageState}
-      shiftLabel={`Ca hôm nay · ${CURRENT_SHIFT.startTime}–${CURRENT_SHIFT.endTime}`}
-      checkedInAt={checkStatus.checkedInAt}
-      checkedOutAt={checkStatus.lastCheckedOutAt}
-    />
-  );
-
-  const heroContent = pageState === "BEFORE_SHIFT"
-    ? <BeforeHeroContent shift={CURRENT_SHIFT} />
-    : pageState === "IN_SHIFT"
-      ? (
-        <InShiftHeroContent
-          shift={CURRENT_SHIFT}
-          tasksDone={totalDone}
-          tasksTotal={totalTasks}
-          mandatoryDone={shiftTasks.mandatoryDoneCount}
-          mandatoryTotal={shiftTasks.mandatoryTotalCount}
-        />
-      )
-      : <OffHeroContent nextShift={NEXT_SHIFT} checkedOutAt={checkStatus.lastCheckedOutAt} />;
-
-  const bodyContent = pageState === "BEFORE_SHIFT"
-    ? <BeforeBody shift={CURRENT_SHIFT} />
-    : pageState === "IN_SHIFT"
-      ? (
-        <InShiftBody
-          taskGroups={shiftTasks.groups}
-          photos={evidence.photos}
-          onToggleTask={shiftTasks.toggleTask}
-          onAddPhoto={evidence.add}
-          onRemovePhoto={evidence.remove}
-          onOpenCamera={evidence.openCamera}
-          canAddPhoto={evidence.canAdd}
-        />
-      )
-      : (
-        <OffShiftBody
-          nextShift={NEXT_SHIFT}
-          shiftSummary={checkStatus.lastCheckedOutAt ? {
-            checkedInAt: checkStatus.checkedInAt ?? "10:00",
-            checkedOutAt: checkStatus.lastCheckedOutAt,
-            tasksCompleted: totalDone,
-            tasksTotal: totalTasks,
-          } : undefined}
-        />
-      );
+  const { statusPill, heroContent, bodyContent } = getTaskPageSections({
+    view,
+    checkStatus,
+    shiftTasks,
+    evidence,
+  });
 
   const bottomAction = getBottomAction({
-    pageState,
+    view,
     checkStatus,
+    timeStatus,
     checkinEnabled,
+    checkoutAllowed,
     onCheckIn: handleCheckIn,
     onCheckOut: handleCheckOutPress,
   });
 
   return (
-    <Page className="h-full min-h-0 overflow-hidden bg-white dark:bg-black">
+    <Page className="h-full min-h-0 overflow-hidden">
       <ShiftPageShell
         employee={TASK_EMPLOYEE}
-        currentShift={CURRENT_SHIFT}
-        nextShift={NEXT_SHIFT}
-        pageState={pageState}
         statusPill={statusPill}
         heroContent={heroContent}
         bodyContent={bodyContent}
@@ -161,89 +183,237 @@ function TaskPage() {
   );
 }
 
-function getBottomAction({
+function createTaskPageViewModel({
   pageState,
+  currentShift,
+  nextShift,
+}: {
+  pageState: ShiftPageState;
+  currentShift: Shift | null;
+  nextShift: Shift | null;
+}): TaskPageViewModel {
+  if (!currentShift || pageState === "NO_SHIFT_TODAY") {
+    return {
+      state: "NO_SHIFT_TODAY",
+      currentShift: null,
+      nextShift,
+    };
+  }
+
+  switch (pageState) {
+    case "UPCOMING_SHIFT":
+      return {
+        state: "UPCOMING_SHIFT",
+        currentShift,
+        nextShift,
+      };
+    case "ACTIVE_SHIFT":
+      return {
+        state: "ACTIVE_SHIFT",
+        currentShift,
+        nextShift,
+      };
+    case "COMPLETED_SHIFT":
+      return {
+        state: "COMPLETED_SHIFT",
+        currentShift,
+        nextShift,
+      };
+  }
+}
+
+interface TaskPageSectionsArgs {
+  view: TaskPageViewModel;
+  checkStatus: ShiftCheckStatus;
+  shiftTasks: ReturnType<typeof useShiftTasks>;
+  evidence: ReturnType<typeof useEvidencePhotos>;
+}
+
+interface TaskPageSections {
+  statusPill: ReactNode;
+  heroContent: ReactNode;
+  bodyContent: ReactNode;
+}
+
+function getTaskPageSections({
+  view,
   checkStatus,
+  shiftTasks,
+  evidence,
+}: TaskPageSectionsArgs): TaskPageSections {
+  const totalDone = shiftTasks.doneCount;
+  const totalTasks = shiftTasks.totalCount;
+  const statusPill = (
+    <StatusPill
+      pageState={view.state}
+      currentShift={view.currentShift}
+      checkStatus={checkStatus}
+    />
+  );
+
+  switch (view.state) {
+    case "NO_SHIFT_TODAY":
+      return {
+        statusPill,
+        heroContent: (
+          <OffHeroContent
+            nextShift={view.nextShift}
+            checkedOutAt={checkStatus.latestCheckoutAt}
+          />
+        ),
+        bodyContent: <OffShiftBody nextShift={view.nextShift} />,
+      };
+
+    case "UPCOMING_SHIFT":
+      return {
+        statusPill,
+        heroContent: <BeforeHeroContent shift={view.currentShift} />,
+        bodyContent: <BeforeBody shift={view.currentShift} />,
+      };
+
+    case "ACTIVE_SHIFT":
+    case "COMPLETED_SHIFT":
+      return {
+        statusPill,
+        heroContent: (
+          <InShiftHeroContent
+            shift={view.currentShift}
+            tasksDone={totalDone}
+            tasksTotal={totalTasks}
+            mandatoryDone={shiftTasks.mandatoryDoneCount}
+            mandatoryTotal={shiftTasks.mandatoryTotalCount}
+          />
+        ),
+        bodyContent: (
+          <InShiftBody
+            taskGroups={shiftTasks.groups}
+            photos={evidence.photos}
+            onToggleTask={shiftTasks.toggleTask}
+            onAddPhoto={evidence.add}
+            onRemovePhoto={evidence.remove}
+            onOpenCamera={evidence.openCamera}
+            canAddPhoto={evidence.canAdd}
+          />
+        ),
+      };
+  }
+}
+
+function getBottomAction({
+  view,
+  checkStatus,
+  timeStatus,
   checkinEnabled,
+  checkoutAllowed,
   onCheckIn,
   onCheckOut,
 }: {
-  pageState: "BEFORE_SHIFT" | "IN_SHIFT" | "OFF_SHIFT";
-  checkStatus: ReturnType<typeof useCheckStatus>["checkStatus"];
+  view: TaskPageViewModel;
+  checkStatus: ShiftCheckStatus;
+  timeStatus: ShiftTimeStatus | null;
   checkinEnabled: boolean;
+  checkoutAllowed: boolean;
   onCheckIn: () => void;
   onCheckOut: () => void;
 }) {
-  if (pageState === "BEFORE_SHIFT") {
-    if (checkStatus.status === "checked_in") {
+  switch (view.state) {
+    case "NO_SHIFT_TODAY":
       return (
         <PrimaryActionButton
-          variant="checked-out"
-          label="Đã vào ca"
-          sublabel={`Từ ${checkStatus.checkedInAt}`}
+          variant="view-shift"
+          label={
+            view.nextShift
+              ? `Ca tiếp theo: ${view.nextShift.startTime}`
+              : "Chưa có ca tiếp theo"
+          }
+          sublabel={view.nextShift?.branch}
+          disabled
         />
       );
-    }
 
-    const enabled = checkinEnabled && checkStatus.status === "idle";
-    return (
-      <PrimaryActionButton
-        variant={enabled ? "checkin" : "checkin-disabled"}
-        label={enabled ? "Vào ca" : `Mở vào ca lúc ${getCheckinOpenTime(CURRENT_SHIFT.startTime)}`}
-        sublabel={enabled ? undefined : "Trước giờ vào ca 15 phút"}
-        onClick={onCheckIn}
-      />
-    );
-  }
-
-  if (pageState === "IN_SHIFT") {
-    if (checkStatus.status === "checked_out") {
+    case "UPCOMING_SHIFT":
       return (
         <PrimaryActionButton
-          variant="checked-out"
-          label={`Đã kết ca lúc ${checkStatus.lastCheckedOutAt}`}
-          sublabel="Xong ca rồi, hẹn gặp lại!"
+          variant={checkinEnabled ? "checkin" : "checkin-disabled"}
+          label={
+            checkinEnabled
+              ? "Vào ca"
+              : `Mở vào ca lúc ${getCheckinOpenTime(
+                  getEmployeeShiftWindow(view.currentShift).startTime,
+                )}`
+          }
+          sublabel={
+            checkinEnabled
+              ? getTimeStatusHelper(timeStatus)
+              : "Trước giờ vào ca 15 phút"
+          }
+          disabled={!checkinEnabled}
+          onClick={checkinEnabled ? onCheckIn : undefined}
         />
       );
-    }
 
-    return (
-      <PrimaryActionButton
-        variant="checkout"
-        label="Kết ca"
-        sublabel={checkStatus.checkedInAt ? `Đã vào ca từ ${checkStatus.checkedInAt}` : undefined}
-        onClick={onCheckOut}
-      />
-    );
+    case "ACTIVE_SHIFT":
+      if (!checkoutAllowed) {
+        return (
+          <PrimaryActionButton
+            variant="checkin-disabled"
+            label="Yêu cầu sửa giờ kết ca"
+            sublabel="Đã quá giờ kết ca, tính năng này sẽ có sau"
+            disabled
+          />
+        );
+      }
+
+      return (
+        <PrimaryActionButton
+          variant="checkout"
+          label="Kết ca"
+          sublabel={
+            checkStatus.checkedInAt
+              ? `Đã vào ca từ ${checkStatus.checkedInAt}`
+              : undefined
+          }
+          onClick={onCheckOut}
+        />
+      );
+
+    case "COMPLETED_SHIFT":
+      return (
+        <PrimaryActionButton
+          variant="checkout"
+          label="Kết ca lần nữa"
+          sublabel={
+            checkStatus.latestCheckoutAt
+              ? `Lần gần nhất lúc ${checkStatus.latestCheckoutAt}`
+              : undefined
+          }
+          onClick={onCheckOut}
+        />
+      );
   }
+}
 
-  return (
-    <PrimaryActionButton
-      variant="view-shift"
-      label={NEXT_SHIFT ? `Ca tiếp theo: ${NEXT_SHIFT.startTime}` : "Chưa có ca tiếp theo"}
-      sublabel={NEXT_SHIFT ? NEXT_SHIFT.branch : undefined}
-      disabled={!NEXT_SHIFT}
-    />
-  );
+function getTimeStatusHelper(timeStatus: ShiftTimeStatus | null) {
+  if (timeStatus === "LATE_NOT_CHECKED_IN") return "Bạn đang trễ ca";
+  if (timeStatus === "CHECKIN_AVAILABLE") return "Có thể vào ca ngay";
+  return undefined;
 }
 
 function groupTasksForModal(tasks: Pick<ShiftTask, "title" | "scope">[]) {
   return [
     {
       title: "Ca chính",
-      items: tasks.filter((task) => task.scope === "master").map((task) => task.title),
+      items: tasks
+        .filter((task) => task.scope === "master")
+        .map((task) => task.title),
     },
     {
       title: "Ca của bạn",
-      items: tasks.filter((task) => task.scope === "sub").map((task) => task.title),
+      items: tasks
+        .filter((task) => task.scope === "sub")
+        .map((task) => task.title),
     },
   ];
-}
-
-function getCheckinOpenTime(startTime: string): string {
-  const [h, m] = startTime.split(":").map(Number);
-  const t = h * 60 + m - 15;
-  return `${Math.floor(t / 60).toString().padStart(2, "0")}:${(t % 60).toString().padStart(2, "0")}`;
 }
 
 export default TaskPage;

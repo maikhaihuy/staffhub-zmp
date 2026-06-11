@@ -1,8 +1,19 @@
 // ─── Domain Types ─────────────────────────────────────────────────────────────
 
-export type ShiftPageState = 'BEFORE_SHIFT' | 'IN_SHIFT' | 'OFF_SHIFT'
+export type ShiftPageState =
+  | 'NO_SHIFT_TODAY'
+  | 'UPCOMING_SHIFT'
+  | 'ACTIVE_SHIFT'
+  | 'COMPLETED_SHIFT'
 
-export type CheckStatus = 'idle' | 'checked_in' | 'checked_out'
+export type ShiftTimeStatus =
+  | 'BEFORE_CHECKIN_WINDOW'
+  | 'CHECKIN_AVAILABLE'
+  | 'LATE_NOT_CHECKED_IN'
+  | 'IN_SHIFT'
+  | 'CHECKOUT_GRACE'
+  | 'PAST_CHECKOUT_WINDOW'
+  | 'OVERTIME'
 
 export interface Employee {
   id: string
@@ -93,11 +104,12 @@ export interface EvidencePhoto {
   addedAt: string
 }
 
-export interface ShiftCheckStatus {
-  status: CheckStatus
+export interface Attendance {
   checkedInAt?: string
-  lastCheckedOutAt?: string
+  latestCheckoutAt?: string
 }
+
+export type ShiftCheckStatus = Attendance
 
 export interface ShiftProgress {
   elapsedMinutes: number

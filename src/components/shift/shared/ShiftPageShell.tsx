@@ -18,14 +18,12 @@
  */
 
 import React from 'react'
-import type { Employee, Shift, ShiftPageState } from '@/types/shift'
+import type { Employee } from '@/types/shift'
 import { useLiveClock } from '@/hooks/useLiveClock'
+import Box from 'zmp-ui/box'
 
 interface ShiftPageShellProps {
   employee: Employee
-  currentShift: Shift | null
-  nextShift: Shift | null
-  pageState: ShiftPageState
   /** TopRow status pill — content changes per state */
   statusPill: React.ReactNode
   /** HeroZone — same height, content changes */
@@ -38,7 +36,6 @@ interface ShiftPageShellProps {
 
 export function ShiftPageShell({
   employee,
-  pageState,
   statusPill,
   heroContent,
   bodyContent,
@@ -54,34 +51,55 @@ export function ShiftPageShell({
   })()
 
   return (
-    <div className="shell">
+    <Box className="flex flex-col h-full overflow-auto relative bg-orange-500">
       {/* ── TOP ROW ── always same position, same height */}
-      <div className="shell-toprow">
-        <div className="shell-toprow-left">
-          <div className="shell-greeting">{greetingText}</div>
-          <div className="shell-name">{employee.name}</div>
-          <div className="shell-status-row">{statusPill}</div>
+      <div className="flex h-[100px] shrink-0 items-start justify-between bg-stone-900 px-5 pt-4">
+        <div className="flex flex-col gap-1">
+          <div className="text-[11px] font-medium uppercase tracking-[.07em] text-stone-400">
+            {greetingText}
+          </div>
+          <div className="text-xl font-semibold leading-tight tracking-normal text-white">
+            {employee.name}
+          </div>
+          <div className="mt-1">{statusPill}</div>
         </div>
-        <div className="shell-toprow-right">
-          <div className="shell-avatar" aria-hidden="true">{employee.initials}</div>
-          <div className="shell-clock" aria-label={`Current time ${clock}`}>{clock}</div>
+        <div className="flex flex-col items-end gap-1.5">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-700 text-[13px] font-semibold text-white"
+            aria-hidden="true"
+          >
+            {employee.initials}
+          </div>
+          <div
+            className="font-mono text-lg font-medium tracking-[.02em] text-white/60"
+            aria-label={`Current time ${clock}`}
+          >
+            {clock}
+          </div>
         </div>
       </div>
 
       {/* ── HERO ZONE ── same height, content swaps */}
-      <div className="shell-hero" aria-live="polite">
+      <div
+        className="flex h-[200px] shrink-0 items-center bg-stone-900 px-5"
+        aria-live="polite"
+      >
         {heroContent}
       </div>
 
       {/* ── SCROLLABLE BODY ── */}
-      <div className="shell-body">
+      <div className="min-h-0 flex-1 overflow-y-auto rounded-t-[20px] bg-stone-100 [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
         {bodyContent}
       </div>
 
       {/* ── BOTTOM ACTION ── always same sticky position */}
-      <div className="shell-bottom" role="region" aria-label="Primary action">
+      <div
+        className="sticky bottom-0 z-50 shrink-0 border-t border-stone-200/80 bg-stone-100/95 px-4 pb-[env(safe-area-inset-bottom,12px)] pt-3 backdrop-blur-2xl"
+        role="region"
+        aria-label="Primary action"
+      >
         {bottomAction}
       </div>
-    </div>
+    </Box>
   )
 }

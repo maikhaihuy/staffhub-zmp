@@ -9,11 +9,11 @@ interface UseCheckStatusResult {
 }
 
 export function useCheckStatus(): UseCheckStatusResult {
-  const [checkStatus, setCheckStatus] = useState<ShiftCheckStatus>({ status: 'idle' })
+  const [checkStatus, setCheckStatus] = useState<ShiftCheckStatus>({})
 
   const checkIn = useCallback(() => {
     const ts = formatTimestamp()
-    setCheckStatus({ status: 'checked_in', checkedInAt: ts })
+    setCheckStatus({ checkedInAt: ts })
     ZaloBridge.vibrate()
     ZaloBridge.setStorage('shift_checkin', ts)
   }, [])
@@ -22,8 +22,7 @@ export function useCheckStatus(): UseCheckStatusResult {
     const ts = formatTimestamp()
     setCheckStatus(prev => ({
       ...prev,
-      status: 'checked_out',
-      lastCheckedOutAt: ts,
+      latestCheckoutAt: ts,
     }))
     ZaloBridge.vibrate()
     ZaloBridge.setStorage('shift_checkout', ts)

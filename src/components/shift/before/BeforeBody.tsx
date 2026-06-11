@@ -1,5 +1,6 @@
 import React from 'react'
 import type { Shift } from '@/types/shift'
+import { getCheckinOpenTime } from '@/utils/shiftUtils'
 
 interface BeforeBodyProps {
   shift: Shift
@@ -23,19 +24,11 @@ export function BeforeBody({ shift }: BeforeBodyProps) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <div>
           <strong>Mở vào ca sớm 15 phút</strong>
-          <p>Nút vào ca bật lúc {getCheckinTime(shift.startTime)}</p>
+          <p>Nút vào ca bật lúc {getCheckinOpenTime(subShift.startTime)}</p>
         </div>
       </div>
     </div>
   )
-}
-
-function getCheckinTime(startTime: string): string {
-  const [h, m] = startTime.split(':').map(Number)
-  const totalMin = h * 60 + m - 15
-  const rh = Math.floor(totalMin / 60).toString().padStart(2, '0')
-  const rm = (totalMin % 60).toString().padStart(2, '0')
-  return `${rh}:${rm}`
 }
 
 interface InfoCardRow { icon: 'team' | 'tasks' | 'time'; label: string; sub: string }
