@@ -1,34 +1,40 @@
-import { Box, List, Page, Tabs, Text } from "zmp-ui";
-import { CurrentScheduleSection } from "./current-schedule";
-import { AvailabilityRegistrationSection } from "./avaibility-registration";
-import { WorkHistorySection } from "./work-history";
+import { Page, Tabs } from "zmp-ui";
+import { AvailabilityRegistrationTabs } from "@/components/schedule/AvailabilityRegistrationTabs";
+import { CurrentScheduleTabs } from "@/components/schedule/CurrentScheduleTabs";
+import { WorkHistoryTabs } from "@/components/schedule/WorkHistoryTabs";
+import { useState } from "react";
 
 function SchedulePage() {
+  const [activeTab, setActiveTab] = useState("schedule");
+  
   return (
-    <Page className="h-full min-h-0 overflow-y-auto">
-      <Tabs
-        className="schedule-tabs"
-        id="schedule-tabs"
-        defaultActiveKey="schedule"
-      >
-        <Tabs.Tab key="schedule" label="Ban biểu">
-          <Box className="pt-2">
-            <CurrentScheduleSection />
-          </Box>
-        </Tabs.Tab>
-        <Tabs.Tab key="register" label="Đăng ban">
-          <Box className="pt-2">  
-            <AvailabilityRegistrationSection />
-          </Box>
-        </Tabs.Tab>
-        <Tabs.Tab key="history" label="Ban ký">
-          <Box className="pt-2">
-            <WorkHistorySection />
-          </Box>
-        </Tabs.Tab>
-      </Tabs>
+    <Page className="h-full min-h-0 overflow-hidden">
+      <div className="h-full min-h-0 flex flex-col overflow-hidden">
+        <div className="shrink-0 bg-white z-10">
+          <Tabs
+            className="custom-tabs"
+            id="schedule-tabs"
+            activeKey={activeTab}
+            onChange={setActiveTab}
+          >
+            <Tabs.Tab key="schedule" label="Ban biểu" />
+            <Tabs.Tab key="register" label="Đăng ban" />
+            <Tabs.Tab key="history" label="Ban ký" />
+          </Tabs>
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {activeTab === "schedule" && (
+            <CurrentScheduleTabs />
+          )}
+          {activeTab === "register" && (
+            <AvailabilityRegistrationTabs />
+          )}
+          {activeTab === "history" && (
+            <WorkHistoryTabs />
+          )}
+        </div>
+      </div>
     </Page>
-    
   );
 }
 

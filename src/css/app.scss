@@ -50,12 +50,12 @@
   overflow: hidden;
 }
 
-.schedule-tabs {
+.custom-tabs {
   --weekly-schedule-sticky-top: 44px;
   overflow: visible;
 }
 
-.schedule-tabs > .zaui-tabs-tabbar {
+.custom-tabs > .zaui-tabs-tabbar {
   position: sticky;
   top: 0;
   z-index: 20;

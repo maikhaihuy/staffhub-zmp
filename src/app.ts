@@ -4,8 +4,6 @@ import "zmp-ui/zaui.css";
 import "@/css/tailwind.scss";
 // Your stylesheet
 import "@/css/app.scss";
-import '@/css/shift.css';
-import '@/css/income.css';
 
 // React core
 import React from "react";
