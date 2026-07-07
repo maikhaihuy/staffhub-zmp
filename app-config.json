@@ -10,22 +10,6 @@
     "hideIOSSafeAreaBottom": true,
     "hideAndroidBottomNavigationBar": false
   },
-  "listPages": [
-    {
-      "name": "home",
-      "path": "pages/home/index",
-      "style": {
-        "navigationBarTitleText": "Home"
-      }
-    },
-    {
-      "name": "profile",
-      "path": "pages/profile/index",
-      "style": {
-        "navigationBarTitleText": "Profile"
-      }
-    }
-  ],
   "listCSS": [],
   "listSyncJS": [],
   "listAsyncJS": [],

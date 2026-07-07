@@ -3,4 +3,11 @@ export const PATHS = {
   TASK: "/task",
   PAYMENT: "/payment",
   PROFILE: "/profile",
-};
+}as const;
+
+export const TAB_PATHS = [
+  PATHS.CALENDAR,
+  PATHS.TASK,
+  PATHS.PAYMENT,
+  PATHS.PROFILE,
+] as const;

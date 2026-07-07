@@ -1,11 +1,10 @@
 import { BottomNavigation, Icon } from "zmp-ui";
-import { useLocation, useNavigate } from "react-router";
 import { BottomNavigationItem } from "@/types/bottom-nav";
 import { PATHS } from "@/constants/paths";
 
 const BottomNavigationItems: Record<string, BottomNavigationItem> = {
   [PATHS.CALENDAR]: {
-    label: "Lịch làm",
+    label: "Ban vụ",
     icon: <Icon icon="zi-calendar" />,
   },
   [PATHS.TASK]: {
@@ -22,22 +21,19 @@ const BottomNavigationItems: Record<string, BottomNavigationItem> = {
   },
 }
 
-export const BottomNavigationBar = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
+export const BottomNavigationBar = ({ activeKey, onTabChange }: { activeKey: string; onTabChange: (key: string) => void }) => {
   return (
     <BottomNavigation
       id="footer"
-      activeKey={location.pathname}
-      onChange={navigate}
-      className="z-50">
+      activeKey={activeKey}
+      onChange={onTabChange}
+      className="z-50"
+      >
       {Object.entries(BottomNavigationItems).map(([path, item]) => (
         <BottomNavigation.Item
           key={path}
           icon={item.icon}
           label={item.label}
-          activeIcon={item.activeIcon}
         />
       ))}
     </BottomNavigation>
